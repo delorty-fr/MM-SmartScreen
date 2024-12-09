@@ -1,0 +1,36 @@
+{
+  "name": "mmm-sonos",
+  "version": "0.0.1",
+  "main": "MMM-Sonos.js",
+  "scripts": {
+    "validate:js": "eslint **/*.js",
+    "validate:css": "stylelint **/*.css",
+    "compile:css": "lessc MMM-Sonos.less MMM-Sonos.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CFenner/MMM-Sonos.git"
+  },
+  "keywords": [
+    "magicmirror"
+  ],
+  "author": "CFenner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CFenner/MMM-Sonos/issues"
+  },
+  "homepage": "https://github.com/CFenner/MMM-Sonos#readme",
+  "dependencies": {
+    "request": "2.88.2"
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "eslint-config-standard": "17.1.0",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "6.1.1",
+    "less": "4.2.0",
+    "stylelint": "16.2.1",
+    "stylelint-config-standard": "36.0.0"
+  }
+}

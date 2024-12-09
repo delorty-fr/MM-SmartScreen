@@ -1,0 +1,56 @@
+body {
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+}
+
+.region.fullscreen.above .container,
+.region.fullscreen.above .container .module,
+.region.fullscreen.above .container .module .module-content,
+.module-content #windy {
+  height: 100%;
+}
+
+#windy-root {
+  height: 100%;
+}
+
+#windy #logo {
+  display: none !important;
+}
+
+#windy #bottom #progress-bar {
+  display: none !important;
+}
+
+#windy #embed-zoom {
+  display: none !important;
+}
+
+#windy #mobile-ovr-select {
+  display: none !important;
+}
+
+#windy #bottom {
+  height: 10px;
+}
+
+#windy #bottom {
+  height: 10px;
+}
+
+/* .region.fullscreen.above .container .module {
+  margin-bottom: 0;
+} */
+
+.region.fullscreen.above {
+  z-index: -1;
+}
+
+
+#windy .leaflet-container img.leaflet-tile {
+  mix-blend-mode: normal !important;
+}
+
+#windy .leaflet-pane.leaflet-overlay-pane {
+  display: none !important;
+}

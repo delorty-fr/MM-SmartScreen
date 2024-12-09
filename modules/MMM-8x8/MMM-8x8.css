@@ -1,0 +1,144 @@
+:root {
+  --color-main: rgba(44, 222, 115, 0.5);
+  --pixel-s: 12px;
+  --pixel-m: 24px;
+}
+
+.MM8x8 {
+  background-color: white;
+  padding: 40px;
+  height: 100vh !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.playAnimation-action {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 12px;
+}
+
+.top-panel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.upload-action {
+  background: none;
+  border: none;
+  font-size: xxx-large;
+  color: var(--color-main) ;
+}
+
+.catIcons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.pageNav-action {
+  border: none;
+  background: none;
+  font-size: xxx-large;
+  color: #e5e5e5;
+}
+
+.iconPreviewPage {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  overflow-y: scroll;
+  padding: 12px;
+  flex-grow: 1;
+}
+
+.iconPreview {
+  display: grid;
+  gap: 3px; 
+  box-shadow: 0px 0px 12px 4px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(#383838, #181818);
+  border-radius: 12px;
+  margin: 4px;
+}
+
+.iconPreview-small {
+  grid-template-columns: repeat(8, var(--pixel-s));
+  grid-template-rows: repeat(8, var(--pixel-s));
+  padding: var(--pixel-s);
+}
+
+.iconPreview-medium {
+  grid-template-columns: repeat(8, var(--pixel-m));
+  grid-template-rows: repeat(8, var(--pixel-m));
+  padding: var(--pixel-m);
+}
+
+.catNavBarWrapper {
+  display: flex;
+  margin: 32px 0px 32px 0px;
+}
+
+.catNavBar {
+  --bg-offset: 0%;
+  display: flex;
+  border-radius: 0.5rem;
+  overflow: scroll;
+  position: relative;
+  background: white;
+  border: 1px #ededed solid;
+  box-shadow: 2.8px 2.8px 2.2px rgba(0, 0, 0, 0.02),
+    6.7px 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    12.5px 12.5px 10px rgba(0, 0, 0, 0.035),
+    22.3px 22.3px 17.9px rgba(0, 0, 0, 0.042),
+    41.8px 41.8px 33.4px rgba(0, 0, 0, 0.05),
+    100px 100px 80px rgba(0, 0, 0, 0.07);
+}
+
+.catNavBarWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.catNavBar > button {
+  width: 150px;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.catNavBar > button:not(:last-of-type) {
+  border-right: 1px solid #eee;
+}
+
+.currentIconPreview {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.icon-cell-small {
+  width: var(--pixel-s);
+  height: var(--pixel-s);
+}
+
+.icon-cell-medium {
+  width: var(--pixel-m);
+  height: var(--pixel-m);
+}
+
+.icon-cell-hidden {
+  opacity: 0;
+}

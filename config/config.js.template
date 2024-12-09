@@ -1,0 +1,177 @@
+/* Config Sample
+ *
+ * For more information on how you can configure this file
+ * see https://docs.magicmirror.builders/configuration/introduction.html
+ * and https://docs.magicmirror.builders/modules/configuration.html
+ *
+ * You can use environment variables using a `config.js.template` file instead of `config.js`
+ * which will be converted to `config.js` while starting. For more information
+ * see https://docs.magicmirror.builders/configuration/introduction.html#enviromnent-variables
+ */
+
+
+const BOSTON_LONG = -71.057083;
+const BOSTON_LAT = 42.361145;
+
+const PARIS_LONG = 2.3522;
+const PARIS_LAT = 48.8566;
+
+let config = {
+	address: "localhost",
+	port: 8080,
+	basePath: "/",
+	ipWhitelist: ["127.0.0.1", "::ffff:127.0.0.1", "::1"],
+	useHttps: false,
+	httpsPrivateKey: "",
+	httpsCertificate: "",
+	language: "en",
+	locale: "en-US",
+	logLevel: ["INFO", "LOG", "WARN", "ERROR"],
+	timeFormat: 24,
+	units: "metric",
+	ignoreContentSecurityPolicy: true,
+	modules: [
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "current",
+				showPrecipitationProbability: true,
+				showHumidity: true,
+				showSun: true,
+				lon: BOSTON_LONG,
+				lat: BOSTON_LAT,
+			}
+		},
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "forecast",
+				lon: BOSTON_LONG,
+				lat: BOSTON_LAT,
+				maxNumberOfDays: 7,
+				maxEntries: 7,
+			}
+		},
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "current",
+				showPrecipitationProbability: true,
+				showHumidity: true,
+				showSun: true,
+				lon: PARIS_LONG,
+				lat: PARIS_LAT,
+			}
+		},
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "forecast",
+				lon: PARIS_LONG,
+				lat: PARIS_LAT,
+				maxNumberOfDays: 7,
+				maxEntries: 7,
+			}
+		},
+		{
+            module: 'MMM-GoogleMapsTraffic',
+            position: 'fullscreen_below',
+            config: {
+                key: '${GOOGLE_TRAFFIC_API_KEY}',
+                lat: BOSTON_LAT,
+                lng: BOSTON_LONG,
+				zoom: 14,
+                styledMapType: "standard",
+            },
+        },
+		{
+			module: "MMM-windy",
+			position: 'fullscreen_above',
+			config: {
+				key: "${WINDY_API_KEY}",
+				initLoadDelay: 200,
+				particlesAnim: 'off',
+				graticule: true,
+				englishLabels: true,
+				hourFormat: '12h',
+				overlay: 'temp'
+			}
+		},
+		{
+			module: 'MMM-page-indicator',
+			position: 'bottom_bar',
+			config: {
+				pages: 1,
+			}
+		},
+		{
+			module: "MMM-Sonos",
+			header: "Playing on SONOS",
+			position: "fullscreen_below",
+			classes: "default everyone",
+			config: {
+			}
+		},
+		{
+			module: "WallberryTheme",
+			position: "fullscreen_above", // Required Position
+			config: {
+				unsplashAccessKey: "${UNSPLASH_API_KEY}",
+				collections: "1986926"
+			}
+		},
+		{
+			module: "WallberryTheme/WB-clock",
+			position: "top_left",
+			config: {
+				localCityName: "Boston", // optional
+				otherCities: [
+					{name: "Paris", timezone: "CET"}, // optional
+				]
+			}
+		},
+		{
+			module: "MMM-8x8",
+			position: "fullscreen_above",
+			config: {
+				iconsPerPage: 20
+			}
+		},
+		// WB-weather adds weather (Optional Module)
+		// {
+		// 	module: "WallberryTheme/WB-weather",
+		// 	position: "bottom_bar",  // Highly suggested location
+		// 	config: {
+		// 		apiKey: "", // OpenWeather
+		// 		latitude:  BOSTON_LAT, // REQUIRED
+		// 		longitude: BOSTON_LONG // REQUIRED
+		// 	}
+		// },
+		{
+			module: 'MMM-pages',
+			config: {
+				modules:
+					[
+						[ "MMM-windy" ], // MMM-windy has to go first otherwise does not display correctly
+						[ "WallberryTheme/WB-clock", "WallberryTheme", "weather" ],
+						[ "MMM-GoogleMapsTraffic" ],
+						[ "MMM-Sonos" ],
+						[ "MMM-8x8" ], 
+					],
+				fixed: [ "MMM-page-indicator" ],
+				// rotationTime: 5000,
+			}
+		},
+	]
+};
+
+/*************** DO NOT EDIT THE LINE BELOW ***************/
+if (typeof module !== "undefined") { module.exports = config; }

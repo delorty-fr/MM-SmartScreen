@@ -1,0 +1,7 @@
+#map {
+    position: unset !important;
+}
+
+#map .gmnoprint {
+    display: none !important;
+}

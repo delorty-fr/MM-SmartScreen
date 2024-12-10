@@ -5,19 +5,18 @@ SmartScreen is a [MagicMirror](https://github.com/MagicMirrorOrg/MagicMirror)-ba
 <img src="screenshots/SmartScreen-weather.png" width="300px"/> <img src="screenshots/SmartScreen-GoogleTraffic.png" width="300px"/> <img src="screenshots/SmartScreen-Sonos.png" width="300px"/> <img src="screenshots/SmartScreen-Windy.png" width="300px"/> <img src="screenshots/SmartScreen-8x8.png" width="300px"/>
 
 <br />
-<br />
 
-Currently, the modules include:
+**Loaded modules:**
 - MM-8x8: homemade module allowing to select and upload icons to a homemade ESP32 8x8 LED matrix display.
 - MMM-SonosTouch: homemade Sonos module optimized for fullscreen display and touch. Based on the [MMM-Sonos](https://github.com/CFenner/MMM-Sonos) module
 - [MMM-GoogleMapsTraffic](https://github.com/vicmora/MMM-GoogleMapsTraffic)
 - [MMM-pages](https://github.com/edward-shen/MMM-pages)
 - [MMM-WeatherChart](https://github.com/mtatsuma/MMM-WeatherChart.git)
-- [MMM-windy](https://github.com/santi4488/MMM-windy)
+- [MMM-windy](https://github.com/santi4488/MMM-windy): a customized MMM-Windy module designed to rotate through and zoom in on a list of specified locations.
 - [WallberryTheme](https://github.com/delightedCrow/WallberryTheme)
 
 
-Tested on:
+**Tested on:**
 
 Hardware:
 - Planar 22" Touch Screen HD LED LCD 1080p PC Monitor PCT2265 w/ VGA POWER USB 3.0 (found on ebay)

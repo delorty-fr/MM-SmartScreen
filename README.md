@@ -2,11 +2,7 @@
 
 SmartScreen is a [MagicMirror](https://github.com/MagicMirrorOrg/MagicMirror)-based application designed to run customized modules optimized for touchscreens. This is a personal project created to meet my own needs and is not currently tailored for widespread community use (though it may be in the future). In its current state, the app requires significant cleanup and will improve over time, including efforts such as code linting and general code cleanup. At present, the app only includes embedded modules, some of which are adapted from the MagicMirror community, while others are custom-built.
 
-<img src="screenshots/SmartScreen-weather.png" width="300px"/>
-<img src="screenshots/SmartScreen-GoogleTraffic.png" width="300px"/>
-<img src="screenshots/SmartScreen-Sonos.png" width="300px"/>
-<img src="screenshots/SmartScreen-Windy.png" width="300px"/>
-<img src="screenshots/SmartScreen-8x8.png" width="300px"/>
+<img src="screenshots/SmartScreen-weather.png" width="300px"/> <img src="screenshots/SmartScreen-GoogleTraffic.png" width="300px"/> <img src="screenshots/SmartScreen-Sonos.png" width="300px"/> <img src="screenshots/SmartScreen-Windy.png" width="300px"/> <img src="screenshots/SmartScreen-8x8.png" width="300px"/>
 
 <br />
 <br />

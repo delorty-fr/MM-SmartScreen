@@ -145,6 +145,14 @@ let config = {
 				iconsPerPage: 20
 			}
 		},
+		{
+			module: "MMM-tractive",
+			position: "fullscreen_below",
+			config: {
+				petId: 'YOUR_TRACTIVE_PET_ID',
+				trackerId: 'YOUR_TRACTIVE_TRACKER_ID',
+			}
+		},
 		// WB-weather adds weather (Optional Module)
 		// {
 		// 	module: "WallberryTheme/WB-weather",
@@ -164,7 +172,8 @@ let config = {
 						[ "WallberryTheme/WB-clock", "WallberryTheme", "weather" ],
 						[ "MMM-GoogleMapsTraffic" ],
 						[ "MMM-Sonos" ],
-						[ "MMM-8x8" ], 
+						[ "MMM-8x8" ],
+						[ "MMM-tractive" ],  
 					],
 				fixed: [ "MMM-page-indicator" ],
 				// rotationTime: 5000,

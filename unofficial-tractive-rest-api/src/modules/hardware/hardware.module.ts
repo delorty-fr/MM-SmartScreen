@@ -7,5 +7,6 @@ import { StoreModule } from '../store/store.module';
   imports: [StoreModule],
   controllers: [HardwareController],
   providers: [HardwareService],
+  exports: [HardwareService],
 })
 export class HardwareModule {}

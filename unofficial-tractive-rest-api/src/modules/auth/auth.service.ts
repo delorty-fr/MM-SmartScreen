@@ -26,6 +26,13 @@ export class AuthService {
 
     this.logger.log(`Authenticate the user '${email}'`);
 
+    // Validate that credentials are configured
+    if (!email || !password) {
+      const errorMessage = 'Tractive credentials not configured. Please set TRACTIVE_EMAIL and TRACTIVE_PASSWORD environment variables.';
+      this.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
     // TODO: check if "this.authenticationStore.lastAuthenticationCache.expires_at" is bigger
     //       than current date.
     if (this.authenticationStore.lastAuthenticationCache) {

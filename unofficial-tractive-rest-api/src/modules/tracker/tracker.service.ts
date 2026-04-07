@@ -8,6 +8,12 @@ import {
 import { TractivePositionHistory } from '../../interfaces/tractive-position-history.interface';
 import { TractiveApi } from '../../constants';
 import { TrackerHistoryDto } from '../../dto/tracker-history.dto';
+import { TractiveCombinedInfo } from '../../interfaces/tractive-combined-info.interface';
+import { PetService } from '../pet/pet.service';
+import { HardwareService } from '../hardware/hardware.service';
+import { LocationService } from '../location/location.service';
+import { TrackerDto } from '../../dto/tracker.dto';
+import { GetPetDto } from '../../dto/pet.dto';
 
 /**
  * Service for tracker information and history from Tractive.
@@ -16,7 +22,12 @@ import { TrackerHistoryDto } from '../../dto/tracker-history.dto';
 export class TrackerService {
   private readonly logger = new Logger(TrackerService.name);
 
-  constructor(private readonly authenticationStore: AuthenticationStore) {}
+  constructor(
+    private readonly authenticationStore: AuthenticationStore,
+    private readonly petService: PetService,
+    private readonly hardwareService: HardwareService,
+    private readonly locationService: LocationService,
+  ) {}
 
   /**
    * Get all trackers on the account
@@ -40,8 +51,8 @@ export class TrackerService {
         },
       });
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting all trackers: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting all trackers: ${e?.message}`);
       throw e;
     }
   }
@@ -67,8 +78,8 @@ export class TrackerService {
         },
       });
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting tracker: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting tracker: ${e?.message}`);
       throw e;
     }
   }
@@ -122,9 +133,65 @@ export class TrackerService {
       }
 
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting tracker history: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting tracker history: ${e?.message}`);
+      throw e;
+    }
+  }
+
+  /**
+   * Get combined information for a tracker including pet, hardware, and location data
+   * @param trackerId - The ID of the tracker
+   * @param petID - Optional pet ID. If not provided, will use tracker's trackable_object_id
+   */
+  public async getCombinedInfo(trackerId: string, petID?: string): Promise<TractiveCombinedInfo> {
+    this.logger.log(`Get combined info for tracker: ${trackerId}${petID ? `, pet: ${petID}` : ''}`);
+
+    const bearer = this.authenticationStore.accessToken;
+    if (!bearer) {
+      throw new NotAuthenticatedException();
+    }
+
+    try {
+      // Fetch tracker info first
+      const tracker = await this.getTracker(trackerId);
+
+      // Fetch hardware and location info in parallel
+      const trackerDto: TrackerDto = { trackerId: trackerId };
+      const [hardware, location] = await Promise.all([
+        this.hardwareService.getTrackerHardware(trackerDto),
+        this.locationService.getTrackerLocation(trackerDto),
+      ]);
+
+      // Fetch pet info if petID is available
+      let pet = undefined;
+      if (petID) {
+        try {
+          const petDto: GetPetDto = { petID: petID };
+          pet = await this.petService.getPet(petDto);
+        } catch (e: any) {
+          this.logger.warn(`Could not fetch pet info for ${petID}: ${e?.message}`);
+          // Continue without pet info
+        }
+      }
+
+      return {
+        pet,
+        tracker,
+        hardware,
+        location,
+      };
+    } catch (e: any) {
+      // Log detailed error information
+      if (e.response) {
+        this.logger.error(
+          `Error while getting combined info - Status: ${e.response.status}, Data: ${JSON.stringify(e.response.data)}`
+        );
+      } else {
+        this.logger.error(`Error while getting combined info for tracker: ${e?.message}`);
+      }
       throw e;
     }
   }
 }
+

@@ -7,5 +7,6 @@ import { StoreModule } from '../store/store.module';
   imports: [StoreModule],
   controllers: [LocationController],
   providers: [LocationService],
+  exports: [LocationService],
 })
 export class LocationModule {}

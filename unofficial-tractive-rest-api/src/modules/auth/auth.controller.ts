@@ -29,17 +29,17 @@ export class AuthController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
-        status = e.response.status;
+        status = e.response?.status || HttpStatus.INTERNAL_SERVER_ERROR;
       }
       const errorResponse: ApiResponse<TractiveAuth> = {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
-      this.logger.log(`Error while authentication: ${e.message}`);
+      this.logger.log(`Error while authentication: ${e?.message}`);
       return errorResponse;
     }
   }
@@ -57,15 +57,15 @@ export class AuthController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       const errorResponse: ApiResponse<boolean> = {
         status,
         data: false,
-        message: e.message,
+        message: e?.message,
       };
       this.logger.log(
-        `Error while calculating if user is authenticated: ${e.message}`,
+        `Error while calculating if user is authenticated: ${e?.message}`,
       );
       return errorResponse;
     }

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
+import { AuthService } from './modules/auth/auth.service';
 
 const swaggerDescription = `
 Tractive is a company that specializes in GPS tracking devices for pets, primarily dogs and cats. These devices allow
@@ -24,6 +25,18 @@ async function bootstrap() {
 
   // class-validation @see https://www.npmjs.com/package/class-validator
   app.useGlobalPipes(new ValidationPipe());
+
+  // Authenticate before starting the server
+  const authService = app.get(AuthService);
+  try {
+    console.log('Authenticating with Tractive API...');
+    await authService.authenticate();
+    console.log('✓ Authentication successful');
+  } catch (error: any) {
+    console.error('✗ Authentication failed:', error?.message);
+    await app.close();
+    process.exit(1);
+  }
 
   // swagger-api @see https://docs.nestjs.com/openapi/introduction
   const config = new DocumentBuilder()

@@ -76,6 +76,7 @@ function createMaterialIcon(iconName, size = IconSizes.M, color = theme.accent) 
 /**
  * Get battery icon name based on percentage
  * Maps 0-100% to battery_android_frame_1 through battery_android_frame_6
+ * Shows battery_android_frame_full when at 100%
  * @param {number} percent - Battery percentage (0-100)
  * @returns {string} Icon name
  */
@@ -86,6 +87,7 @@ function getBatteryIconName(percent) {
   if (percent <= 50) return 'battery_android_frame_3';
   if (percent <= 66) return 'battery_android_frame_4';
   if (percent <= 83) return 'battery_android_frame_5';
+  if (percent <= 95) return 'battery_android_frame_6';
   return 'battery_android_frame_6';
 }
 
@@ -357,12 +359,12 @@ function createBatterySection(batteryLevel, isCharging, batterySaveMode) {
 /**
  * Create Profile Section
  */
-function createProfileSection(dogName, dogImage) {
+function createProfileSection(dogName, dogImage, onClickHandler) {
   const section = document.createElement('section');
   section.style.display = 'flex';
   section.style.flexDirection = 'column';
   section.style.alignItems = 'center';
-  section.style.gap = '32px';
+  section.style.gap = '64px';
   section.style.position = 'relative';
   section.style.paddingTop = '24px';
 
@@ -396,6 +398,21 @@ function createProfileSection(dogName, dogImage) {
   imgContainer.style.display = 'flex';
   imgContainer.style.alignItems = 'center';
   imgContainer.style.justifyContent = 'center';
+  imgContainer.style.cursor = 'pointer';
+  imgContainer.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease';
+
+  // Add click handler
+  if (onClickHandler) {
+    imgContainer.addEventListener('click', onClickHandler);
+    imgContainer.addEventListener('mouseover', () => {
+      imgContainer.style.transform = 'scale(1.05)';
+      imgContainer.style.boxShadow = `0 20px 48px ${theme.overlay.dark}, 0 0 40px ${theme.overlay.accentLight}`;
+    });
+    imgContainer.addEventListener('mouseout', () => {
+      imgContainer.style.transform = 'scale(1)';
+      imgContainer.style.boxShadow = `0 20px 48px ${theme.overlay.dark}`;
+    });
+  }
 
   const img = document.createElement('img');
   img.src = '/modules/MMM-tractive/pet_picture.jpeg';

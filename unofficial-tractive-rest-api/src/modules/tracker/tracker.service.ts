@@ -163,20 +163,28 @@ export class TrackerService {
         this.locationService.getTrackerLocation(trackerDto),
       ]);
 
-      // Fetch pet info if petID is available
+      // Determine which pet ID to use for fetching pet and health data
+      const resolvedPetId = petID || tracker.trackable_object_id;
+
+      // Fetch pet and pet health info in parallel if petID is available
       let pet = undefined;
-      if (petID) {
+      let petHealthData = undefined;
+      if (resolvedPetId) {
         try {
-          const petDto: GetPetDto = { petID: petID };
-          pet = await this.petService.getPet(petDto);
+          const petDto: GetPetDto = { petID: resolvedPetId };
+          [pet, petHealthData] = await Promise.all([
+            this.petService.getPet(petDto),
+            this.petService.getPetHealth(petDto),
+          ]);
         } catch (e: any) {
-          this.logger.warn(`Could not fetch pet info for ${petID}: ${e?.message}`);
+          this.logger.warn(`Could not fetch pet info for ${resolvedPetId}: ${e?.message}`);
           // Continue without pet info
         }
       }
 
       return {
         pet,
+        petHealthData,
         tracker,
         hardware,
         location,

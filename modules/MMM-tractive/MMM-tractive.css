@@ -18,3 +18,33 @@
   direction: ltr;
 }
 
+/* ===== LOADING ANIMATION ===== */
+@keyframes pulse-color {
+  0% {
+    color: #2ddbde;
+    filter: drop-shadow(0 0 10px rgba(45, 219, 222, 0.3));
+  }
+  50% {
+    color: #2ddbde;
+    filter: drop-shadow(0 0 25px rgba(45, 219, 222, 0.8));
+  }
+  100% {
+    color: #2ddbde;
+    filter: drop-shadow(0 0 10px rgba(45, 219, 222, 0.3));
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-icon {
+  animation: pulse-color 2s ease-in-out infinite;
+  font-size: 104px;
+}
+

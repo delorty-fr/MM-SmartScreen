@@ -45,11 +45,7 @@ Module.register('MMM-tractive', {
     }
 
     console.log('[MMM-tractive] Update called, fetching tractive info')
-    this.sendSocketNotification('PET_UPDATE', this.config.petId)
-    this.sendSocketNotification('PET_HEALTH_UPDATE', this.config.petId)
-    this.sendSocketNotification('TRACKER_HARDWARE_UPDATE', this.config.trackerId)
-    this.sendSocketNotification('TRACKER_LOCATION_UPDATE', this.config.trackerId)
-    this.sendSocketNotification('TRACKER_UPDATE', this.config.trackerId)
+    this.sendSocketNotification('TRACTIVE_UPDATE', {petId: this.config.petId, trackerId: this.config.trackerId})
   },
 
   getStyles: function () {
@@ -72,12 +68,62 @@ Module.register('MMM-tractive', {
     dashboard.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
     dashboard.style.overflowY = 'auto';
 
+    // Define callback handlers at the top level so they're available in both loading and loaded states
+    const onRefreshClick = () => {
+      this.petData = null;
+      this.petHealthData = null;
+      this.trackerHardwareData = null;
+      this.trackerLocationData = null;
+      this.updateDom(this.config.animationSpeed);
+      this.update();
+    }
+
+    const onLightToggleClick = () => {
+      this.lightToggleState.lightOn = !this.lightToggleState.lightOn;
+      this.lightToggleState.inProgress = true;
+      this.updateDom(0);
+
+      const notification = this.lightToggleState.lightOn ? 'SWITCH_LIGHT_ON' : 'SWITCH_LIGHT_OFF';
+      this.sendSocketNotification(notification, this.config.trackerId);
+    }
+
+    const onSoundToggleClick = () => {
+      this.soundToggleState.soundOn = !this.soundToggleState.soundOn;
+      this.soundToggleState.inProgress = true;
+      this.updateDom(0);
+
+      const notification = this.soundToggleState.soundOn ? 'SWITCH_SOUND_ON' : 'SWITCH_SOUND_OFF';
+      this.sendSocketNotification(notification, this.config.trackerId);
+    }
+
     if(!this.isLoaded()) {
       const loading = document.createElement('div');
-      loading.textContent = 'Loading...';
-      loading.style.fontSize = '24px';
-      loading.style.textAlign = 'center';
-      loading.style.padding = '48px';
+      loading.style.display = 'flex';
+      loading.style.flexDirection = 'column';
+      loading.style.alignItems = 'center';
+      loading.style.justifyContent = 'center';
+      loading.style.height = '100vh';
+      loading.style.gap = '24px';
+      
+      const icon = document.createElement('span');
+      icon.className = 'material-symbols-outlined loading-icon';
+      icon.textContent = 'pets';
+      icon.style.cursor = 'pointer';
+      icon.addEventListener('click', onRefreshClick);
+      icon.addEventListener('mouseover', () => {
+        icon.style.transform = 'scale(1.05)';
+      });
+      icon.addEventListener('mouseout', () => {
+        icon.style.transform = 'scale(1)';
+      });
+      
+      const text = document.createElement('div');
+      text.textContent = 'Loading...';
+      text.style.fontSize = '24px';
+      text.style.color = theme.text.secondary;
+      
+      loading.appendChild(icon);
+      // loading.appendChild(text);
       dashboard.appendChild(loading);
       return dashboard;
     }
@@ -133,36 +179,9 @@ Module.register('MMM-tractive', {
     const minutesGoal = this.petHealthData ? this.petHealthData.activity.minutesGoal : null;
     const alerts = this.petHealthData ? this.petHealthData.healthAlerts.unseenCount : null; 
 
-    const onRefreshClick = () => {
-      this.petData = null;
-      this.petHealthData = null;
-      this.trackerHardwareData = null;
-      this.trackerLocationData = null;
-      this.updateDom(this.config.animationSpeed);
-      this.update();
-    }
-
-    const onLightToggleClick = () => {
-      this.lightToggleState.lightOn = !this.lightToggleState.lightOn;
-      this.lightToggleState.inProgress = true;
-      this.updateDom(0);
-
-      const notification = this.lightToggleState.lightOn ? 'SWITCH_LIGHT_ON' : 'SWITCH_LIGHT_OFF';
-      this.sendSocketNotification(notification, this.config.trackerId);
-    }
-
-    const onSoundToggleClick = () => {
-      this.soundToggleState.soundOn = !this.soundToggleState.soundOn;
-      this.soundToggleState.inProgress = true;
-      this.updateDom(0);
-
-      const notification = this.soundToggleState.soundOn ? 'SWITCH_SOUND_ON' : 'SWITCH_SOUND_OFF';
-      this.sendSocketNotification(notification, this.config.trackerId);
-    }
-
     mainContent.appendChild(createHeader(new Date()));
-    mainContent.appendChild(createProfileSection(petName, petImage));
-    mainContent.appendChild(createControlsSection(onRefreshClick, onLightToggleClick, this.lightToggleState.inProgress, onSoundToggleClick, this.soundToggleState.inProgress));
+    mainContent.appendChild(createProfileSection(petName, petImage, onRefreshClick));
+    // mainContent.appendChild(createControlsSection(onRefreshClick, onLightToggleClick, this.lightToggleState.inProgress, onSoundToggleClick, this.soundToggleState.inProgress));
     mainContent.appendChild(createStatusRow(petBirthday, batteryLevel, isCharging, batterySaveMode));
     mainContent.appendChild(createActivitySection(minutesActive, minutesGoal));
     mainContent.appendChild(createMetricsRow(respiratoryStatus, heartRateStatus, alerts));
@@ -181,11 +200,19 @@ Module.register('MMM-tractive', {
 
   socketNotificationReceived: function (notification, payload) {
 
+    console.log(`[MMM-tractive] Received socket notification: ${notification} with payload:`, payload)
+
     const animationSpeed = this.config.animationSpeed
 
-   if (notification === 'TRACTIVE_AUTH_SUCCESS') {
+    if (notification === 'TRACTIVE_AUTH_SUCCESS') {
       this.authenticated = true
       this.update()
+    } else if (notification === 'TRACTIVE_DATA') {
+      this.petData = payload.pet
+      this.petHealthData = payload.petHealthData
+      this.trackerHardwareData = payload.hardware
+      this.trackerLocationData = payload.location
+      this.trackerData = payload.tracker 
     } else if (notification === 'PET_DATA') {
       this.petData = payload
     } else if (notification === 'PET_HEALTH_DATA') {
@@ -206,8 +233,11 @@ Module.register('MMM-tractive', {
       animationSpeed = 0;
     }
 
-    if(this.isLoaded() && this.domReady) {
+    const isLoaded = this.isLoaded()
+    if(isLoaded && this.domReady) {
       this.updateDom(animationSpeed);
+    } else {
+      console.log(`[MMM-tractive] Data not fully loaded yet (isLoaded=${isLoaded}, domReady=${this.domReady}), skipping DOM update`)
     }
 
   },

@@ -6,7 +6,9 @@ module.exports = NodeHelper.create({
     console.log('Tractive helper started ...')
   },
   // Subclass socketNotificationReceived received.
-  socketNotificationReceived: function (notification, id) {
+  socketNotificationReceived: function (notification, ids) {
+    const { petId, trackerId } = ids;
+    console.log(`[MMM-tractive] Received socket notification: ${notification} with petId: ${petId} and trackerId: ${trackerId}`)
     if (notification === 'TRACTIVE_AUTH') {
       const self = this
       request('http://localhost:3002/auth', function (error, response, body) {
@@ -17,9 +19,19 @@ module.exports = NodeHelper.create({
           console.error('Failure: ' + error)
         }
       })
+    } else if (notification === 'TRACTIVE_UPDATE') {
+      const self = this
+      request(`http://localhost:3002/tractive?trackerId=${trackerId}&petID=${petId}`, function (error, response, body) {
+         console.log('/tractive: ', JSON.parse(body))
+        if (!error && response.statusCode === 200) {
+          self.sendSocketNotification('TRACTIVE_DATA', JSON.parse(body).data)
+        } else {
+          console.error('Failure: ' + error)
+        }
+      })
     } else if (notification === 'TRACKER_LOCATION_UPDATE') {
       const self = this
-      request(`http://localhost:3002/location/${id}`, function (error, response, body) {
+      request(`http://localhost:3002/location/${trackerId}`, function (error, response, body) {
          console.log('/location: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('TRACKER_LOCATION_DATA', JSON.parse(body).data)
@@ -29,7 +41,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'PET_UPDATE') {
       const self = this
-      request(`http://localhost:3002/pet/${id}`, function (error, response, body) {
+      request(`http://localhost:3002/pet/${petId}`, function (error, response, body) {
          console.log('/pet: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('PET_DATA', JSON.parse(body).data)
@@ -39,7 +51,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'TRACKER_HARDWARE_UPDATE') {
       const self = this
-      request(`http://localhost:3002/hardware/${id}`, function (error, response, body) {
+      request(`http://localhost:3002/hardware/${trackerId}`, function (error, response, body) {
         console.log('/hardware: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('TRACKER_HARDWARE_DATA', JSON.parse(body).data)
@@ -49,7 +61,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'TRACKER_UPDATE') {
       const self = this
-      request(`http://localhost:3002/tracker/${id}`, function (error, response, body) {
+      request(`http://localhost:3002/tracker/${trackerId}`, function (error, response, body) {
         console.log('/tracker: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('TRACKER_DATA', JSON.parse(body).data)
@@ -59,7 +71,7 @@ module.exports = NodeHelper.create({
       })
      } else if (notification === 'PET_HEALTH_UPDATE') {
       const self = this
-      request(`http://localhost:3002/pet/${id}/health`, function (error, response, body) {
+      request(`http://localhost:3002/pet/${petId}/health`, function (error, response, body) {
         console.log('/health: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('PET_HEALTH_DATA', JSON.parse(body).data)
@@ -69,7 +81,7 @@ module.exports = NodeHelper.create({
       })
      } else if (notification === 'SWITCH_LIGHT_ON') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/led/on`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/led/on`, function (error, response, body) {
         console.log('/light: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('LIGHT_ON_SUCCESS', JSON.parse(body).data)
@@ -80,7 +92,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'SWITCH_LIGHT_OFF') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/led/off`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/led/off`, function (error, response, body) {
         console.log('/light: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('LIGHT_OFF_SUCCESS', JSON.parse(body).data)
@@ -91,7 +103,7 @@ module.exports = NodeHelper.create({
       })
    } else if (notification === 'SWITCH_SOUND_ON') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/buzzer/on`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/buzzer/on`, function (error, response, body) {
         console.log('/sound: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('SOUND_ON_SUCCESS', JSON.parse(body).data)
@@ -102,7 +114,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'SWITCH_SOUND_OFF') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/buzzer/off`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/buzzer/off`, function (error, response, body) {
         console.log('/sound: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('SOUND_OFF_SUCCESS', JSON.parse(body).data)
@@ -113,7 +125,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'SWITCH_LIVE_TRACKING_ON') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/live/on`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/live/on`, function (error, response, body) {
         console.log('/live: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('LIVE_TRACKING_ON_SUCCESS', JSON.parse(body).data)
@@ -124,7 +136,7 @@ module.exports = NodeHelper.create({
       })
     } else if (notification === 'SWITCH_LIVE_TRACKING_OFF') {
       const self = this
-      request.post(`http://localhost:3002/command/${id}/live/off`, function (error, response, body) {
+      request.post(`http://localhost:3002/command/${trackerId}/live/off`, function (error, response, body) {
         console.log('/live: ', JSON.parse(body))
         if (!error && response.statusCode === 200) {
           self.sendSocketNotification('LIVE_TRACKING_OFF_SUCCESS', JSON.parse(body).data)

@@ -24,8 +24,6 @@ export class AuthService {
     const email = process.env.TRACTIVE_EMAIL;
     const password = process.env.TRACTIVE_PASSWORD;
 
-    this.logger.log(`Authenticate the user '${email}'`);
-
     // Validate that credentials are configured
     if (!email || !password) {
       const errorMessage = 'Tractive credentials not configured. Please set TRACTIVE_EMAIL and TRACTIVE_PASSWORD environment variables.';

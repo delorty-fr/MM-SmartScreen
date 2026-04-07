@@ -10,5 +10,6 @@ import { LocationModule } from '../location/location.module';
   imports: [StoreModule, PetModule, HardwareModule, LocationModule],
   controllers: [TrackerController],
   providers: [TrackerService],
+  exports: [TrackerService],
 })
 export class TrackerModule {}

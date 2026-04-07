@@ -7,6 +7,7 @@ import { AccountModule } from './modules/account/account.module';
 import { PetModule } from './modules/pet/pet.module';
 import { CommandModule } from './modules/command/command.module';
 import { TrackerModule } from './modules/tracker/tracker.module';
+import { RootController } from './root.controller';
 
 @Module({
   imports: [
@@ -19,5 +20,6 @@ import { TrackerModule } from './modules/tracker/tracker.module';
     TrackerModule,
     ConfigModule.forRoot(),
   ],
+  controllers: [RootController],
 })
 export class AppModule {}

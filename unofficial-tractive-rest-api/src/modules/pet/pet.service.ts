@@ -53,8 +53,8 @@ export class PetService {
       }
 
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting pet: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting pet: ${e?.message}`);
       throw e;
     }
   }
@@ -81,8 +81,8 @@ export class PetService {
         },
       });
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting pets: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting pets: ${e?.message}`);
       throw e;
     }
   }
@@ -108,8 +108,8 @@ export class PetService {
         },
       });
       return response.data;
-    } catch (e) {
-      this.logger.error(`Error while getting pet health: ${e.message}`);
+    } catch (e: any) {
+      this.logger.error(`Error while getting pet health: ${e?.message}`);
       throw e;
     }
   }

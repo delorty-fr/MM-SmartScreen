@@ -61,6 +61,34 @@ const IconSizes = {
 };
 
 /**
+ * Create loading screen
+ */
+function createLoadingScreen(onRefreshClick) {
+  const loading = document.createElement('div');
+  loading.style.display = 'flex';
+  loading.style.flexDirection = 'column';
+  loading.style.alignItems = 'center';
+  loading.style.justifyContent = 'center';
+  loading.style.height = '100vh';
+  loading.style.gap = '24px';
+
+  const icon = document.createElement('span');
+  icon.className = 'material-symbols-outlined loading-icon';
+  icon.textContent = 'pets';
+  icon.style.cursor = 'pointer';
+  icon.addEventListener('click', onRefreshClick);
+  icon.addEventListener('mouseover', () => {
+    icon.style.transform = 'scale(1.05)';
+  });
+  icon.addEventListener('mouseout', () => {
+    icon.style.transform = 'scale(1)';
+  });
+
+  loading.appendChild(icon);
+  return loading;
+}
+
+/**
  * Create Material Symbol icon
  */
 function createMaterialIcon(iconName, size = IconSizes.M, color = theme.accent) {

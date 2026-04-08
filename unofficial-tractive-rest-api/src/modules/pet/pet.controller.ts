@@ -28,16 +28,16 @@ export class PetController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting pets: ${e.message}`);
+      this.logger.error(`Error while getting pets: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -53,16 +53,16 @@ export class PetController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting pet: ${e.message}`);
+      this.logger.error(`Error while getting pet: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -78,16 +78,16 @@ export class PetController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting pet health: ${e.message}`);
+      this.logger.error(`Error while getting pet health: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }

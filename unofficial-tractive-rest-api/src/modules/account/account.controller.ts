@@ -30,16 +30,16 @@ export class AccountController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting account info: ${e.message}`);
+      this.logger.error(`Error while getting account info: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -55,16 +55,16 @@ export class AccountController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting subscriptions: ${e.message}`);
+      this.logger.error(`Error while getting subscriptions: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -82,16 +82,16 @@ export class AccountController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting subscription: ${e.message}`);
+      this.logger.error(`Error while getting subscription: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -107,16 +107,16 @@ export class AccountController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while getting shares: ${e.message}`);
+      this.logger.error(`Error while getting shares: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }

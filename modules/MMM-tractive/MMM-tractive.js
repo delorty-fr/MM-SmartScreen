@@ -19,7 +19,6 @@ Module.register('MMM-tractive', {
   trackerData: null,
   trackerHardwareData: null,
   trackerLocationData: null,
-  authenticated: false,
 
   lightToggleState: { lightOn: false, inProgress: false },
   soundToggleState: { soundOn: false, inProgress: false },
@@ -33,18 +32,8 @@ Module.register('MMM-tractive', {
       this.config.updateInterval * 60 * 1000)
   },
 
-  authenticate: function () {
-    console.log('[MMM-tractive] Authenticating with Tractive API')
-    this.sendSocketNotification('TRACTIVE_AUTH')
-  },
-
   update: function () {
-    if (!this.authenticated) {
-      console.log('[MMM-tractive] Not authenticated yet, skipping update')
-      return
-    }
-
-    console.log('[MMM-tractive] Update called, fetching tractive info')
+    console.log('[MMM-tractive] Fetching tractive info...')
     this.sendSocketNotification('TRACTIVE_UPDATE', {petId: this.config.petId, trackerId: this.config.trackerId})
   },
 
@@ -57,7 +46,7 @@ Module.register('MMM-tractive', {
   },
 
   getDom: function () {
-    console.log('[MMM-tractive] getDom called - loaded')
+    console.log('[MMM-tractive] getDom')
     
     const dashboard = document.createElement('div');
     dashboard.style.minHeight = '100vh';
@@ -78,6 +67,13 @@ Module.register('MMM-tractive', {
       this.update();
     }
 
+    if(!this.isLoaded()) {
+      console.log('[MMM-tractive] Data not fully loaded yet, showing loading screen')
+      const loading = createLoadingScreen(onRefreshClick);
+      dashboard.appendChild(loading);
+      return dashboard;
+    }
+
     const onLightToggleClick = () => {
       this.lightToggleState.lightOn = !this.lightToggleState.lightOn;
       this.lightToggleState.inProgress = true;
@@ -92,40 +88,8 @@ Module.register('MMM-tractive', {
       this.soundToggleState.inProgress = true;
       this.updateDom(0);
 
-      const notification = this.soundToggleState.soundOn ? 'SWITCH_SOUND_ON' : 'SWITCH_SOUND_OFF';
+    const notification = this.soundToggleState.soundOn ? 'SWITCH_SOUND_ON' : 'SWITCH_SOUND_OFF';
       this.sendSocketNotification(notification, this.config.trackerId);
-    }
-
-    if(!this.isLoaded()) {
-      const loading = document.createElement('div');
-      loading.style.display = 'flex';
-      loading.style.flexDirection = 'column';
-      loading.style.alignItems = 'center';
-      loading.style.justifyContent = 'center';
-      loading.style.height = '100vh';
-      loading.style.gap = '24px';
-      
-      const icon = document.createElement('span');
-      icon.className = 'material-symbols-outlined loading-icon';
-      icon.textContent = 'pets';
-      icon.style.cursor = 'pointer';
-      icon.addEventListener('click', onRefreshClick);
-      icon.addEventListener('mouseover', () => {
-        icon.style.transform = 'scale(1.05)';
-      });
-      icon.addEventListener('mouseout', () => {
-        icon.style.transform = 'scale(1)';
-      });
-      
-      const text = document.createElement('div');
-      text.textContent = 'Loading...';
-      text.style.fontSize = '24px';
-      text.style.color = theme.text.secondary;
-      
-      loading.appendChild(icon);
-      // loading.appendChild(text);
-      dashboard.appendChild(loading);
-      return dashboard;
     }
 
     // Main content wrapper
@@ -175,9 +139,9 @@ Module.register('MMM-tractive', {
     }
     
     const batteryLevel = this.trackerHardwareData ? this.trackerHardwareData.battery_level : null;
-    const minutesActive = this.petHealthData ? this.petHealthData.activity.minutesActive : null;
-    const minutesGoal = this.petHealthData ? this.petHealthData.activity.minutesGoal : null;
-    const alerts = this.petHealthData ? this.petHealthData.healthAlerts.unseenCount : null; 
+    const minutesActive = this.petHealthData ? this.petHealthData.activity?.minutesActive : null;
+    const minutesGoal = this.petHealthData ? this.petHealthData.activity?.minutesGoal : null;
+    const alerts = this.petHealthData ? this.petHealthData.healthAlerts?.unseenCount : null; 
 
     mainContent.appendChild(createHeader(new Date()));
     mainContent.appendChild(createProfileSection(petName, petImage, onRefreshClick));
@@ -194,7 +158,7 @@ Module.register('MMM-tractive', {
   notificationReceived: function(notification, payload, sender) {  
     if (notification === "MODULE_DOM_CREATED") {  
       this.domReady = true; 
-      this.authenticate()
+      this.update()
     } 
   }, 
 
@@ -205,8 +169,8 @@ Module.register('MMM-tractive', {
     const animationSpeed = this.config.animationSpeed
 
     if (notification === 'TRACTIVE_AUTH_SUCCESS') {
-      this.authenticated = true
-      this.update()
+      // this.authenticated = true
+      // this.update()
     } else if (notification === 'TRACTIVE_DATA') {
       this.petData = payload.pet
       this.petHealthData = payload.petHealthData

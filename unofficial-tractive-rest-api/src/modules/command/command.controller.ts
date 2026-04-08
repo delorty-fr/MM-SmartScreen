@@ -27,16 +27,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while enabling live tracking: ${e.message}`);
+      this.logger.error(`Error while enabling live tracking: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -52,16 +52,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while disabling live tracking: ${e.message}`);
+      this.logger.error(`Error while disabling live tracking: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -77,16 +77,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while turning LED on: ${e.message}`);
+      this.logger.error(`Error while turning LED on: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -102,16 +102,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while turning LED off: ${e.message}`);
+      this.logger.error(`Error while turning LED off: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -127,16 +127,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while turning buzzer on: ${e.message}`);
+      this.logger.error(`Error while turning buzzer on: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }
@@ -152,16 +152,16 @@ export class CommandController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response?.status || status;
       }
-      this.logger.error(`Error while turning buzzer off: ${e.message}`);
+      this.logger.error(`Error while turning buzzer off: ${e?.message}`);
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }

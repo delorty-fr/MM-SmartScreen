@@ -45,13 +45,13 @@ export class HardwareController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response.status;
       }
       this.logger.error(
-        `Error while getting tracker hardware report: ${e.message}`,
+        `Error while getting tracker hardware report: ${e?.message}`,
       );
       return {
         status,
@@ -90,18 +90,18 @@ export class HardwareController {
         status: HttpStatus.OK,
         data,
       };
-    } catch (e) {
+    } catch (e: any) {
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (e instanceof AxiosError) {
         status = e.response.status;
       }
       this.logger.error(
-        `Error while getting tracker battery level: ${e.message}`,
+        `Error while getting tracker battery level: ${e?.message}`,
       );
       return {
         status,
         data: null,
-        message: e.message,
+        message: e?.message,
       };
     }
   }

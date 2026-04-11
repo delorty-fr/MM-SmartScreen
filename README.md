@@ -40,4 +40,7 @@ OR
 
 ## Run
 1. Start backend services first from [MM-Smartscreen-services](https://github.com/delorty-fr/MM-Smartscreen-services.git)
-2. `npm run start:win`
+2. 
+    WINDOWS: `npm run start:win` or `run.bat`
+    MACOS/UNIX: `npm run start`
+

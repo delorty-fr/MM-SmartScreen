@@ -126,9 +126,8 @@ function getBatteryIconName(percent) {
  */
 function getBatteryColor(percent) {
   if (percent == null) return theme.text.muted;
-  if (percent <= 16) return theme.battery.critical;
-  if (percent <= 50) return theme.battery.low;
-  if (percent <= 66) return theme.battery.medium;
+  if (percent <= 10) return theme.battery.critical;
+  if (percent <= 25) return theme.battery.low;
   return theme.battery.good;
 }
 
@@ -387,7 +386,7 @@ function createBatterySection(batteryLevel, isCharging, batterySaveMode) {
 /**
  * Create Profile Section
  */
-function createProfileSection(dogName, dogImage, onClickHandler) {
+function createProfileSection(dogName, onClickHandler) {
   const section = document.createElement('section');
   section.style.display = 'flex';
   section.style.flexDirection = 'column';

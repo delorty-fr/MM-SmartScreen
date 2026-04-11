@@ -102,18 +102,18 @@ Module.register('MMM-tractive', {
     mainContent.style.paddingBottom = '48px';
 
     let respiratoryStatus = 'UNKNOWN';
-    if((this.petHealthData && this.petHealthData.restingHeartRate.status === 'NORMAL')) {
+    if((this.petHealthData && this.petHealthData.restingRespiratoryRate.status === 'NORMAL')) {
       respiratoryStatus = 'NORMAL';
-    } else if((this.petHealthData && this.petHealthData.restingHeartRate.status === 'NOT_ENOUGH_DATA_TODAY')) {
+    } else if((this.petHealthData && this.petHealthData.restingRespiratoryRate.status === 'NOT_ENOUGH_DATA_TODAY')) {
       respiratoryStatus = 'NORMAL';
     } else {
       respiratoryStatus = 'ALERT';
     }
 
     let heartRateStatus = 'UNKNOWN';
-    if(this.petHealthData && this.petHealthData.restingRespiratoryRate.status === 'NORMAL') {
+    if(this.petHealthData && this.petHealthData.restingHeartRate.status === 'NORMAL') {
       heartRateStatus = 'NORMAL';
-    } else if((this.petHealthData && this.petHealthData.restingRespiratoryRate.status === 'NOT_ENOUGH_DATA_TODAY')) {
+    } else if((this.petHealthData && this.petHealthData.restingHeartRate.status === 'NOT_ENOUGH_DATA_TODAY')) {
       heartRateStatus = 'NORMAL';
     } else {
       heartRateStatus = 'ALERT';
@@ -124,7 +124,6 @@ Module.register('MMM-tractive', {
     const batterySaveMode = this.trackerData && this.trackerData.state_reason === "POWER_SAVING";
 
     const petName = this.petData?.details?.name || 'Pet Tracker';
-    const petImage = this.petData?.details?.photo || 'img/photo.jpg';
     
     // Handle birthday - could be a string date or numeric timestamp
     let petBirthday = null;
@@ -144,7 +143,7 @@ Module.register('MMM-tractive', {
     const alerts = this.petHealthData ? this.petHealthData.healthAlerts?.unseenCount : null; 
 
     mainContent.appendChild(createHeader(new Date()));
-    mainContent.appendChild(createProfileSection(petName, petImage, onRefreshClick));
+    mainContent.appendChild(createProfileSection(petName, onRefreshClick));
     // mainContent.appendChild(createControlsSection(onRefreshClick, onLightToggleClick, this.lightToggleState.inProgress, onSoundToggleClick, this.soundToggleState.inProgress));
     mainContent.appendChild(createStatusRow(petBirthday, batteryLevel, isCharging, batterySaveMode));
     mainContent.appendChild(createActivitySection(minutesActive, minutesGoal));

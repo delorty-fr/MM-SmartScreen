@@ -25,6 +25,12 @@
 	"main": "js/electron.js",
 	"scripts": {
 		"start": "DISPLAY=\"${DISPLAY:=:0}\" ./node_modules/.bin/electron js/electron.js",
+		"start:display0": "./node_modules/.bin/electron js/electron.js --screen=0",
+		"start:display1": "./node_modules/.bin/electron js/electron.js --screen=1",
+		"start:display2": "./node_modules/.bin/electron js/electron.js --screen=2",
+		"start:display0:dev": "./node_modules/.bin/electron js/electron.js --screen=0 dev",
+		"start:display1:dev": "./node_modules/.bin/electron js/electron.js --screen=1 dev",
+		"start:display2:dev": "./node_modules/.bin/electron js/electron.js --screen=2 dev",
 		"start:dev": "DISPLAY=\"${DISPLAY:=:0}\" ./node_modules/.bin/electron js/electron.js dev",
 		"start:win": ".\\node_modules\\.bin\\electron js\\electron.js",
 		"start:win:dev": ".\\node_modules\\.bin\\electron js\\electron.js dev",

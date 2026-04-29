@@ -10,6 +10,9 @@ Module.register('MMM-tractive', {
     initLoadDelay: 5000,
     animationSpeed: 500,
     updateInterval: 30, // every 30 minutes
+    activityStartTime: "06:00",
+    activityEndTime: "24:00",
+    stepsGraphLabelGapHours: 1 // min 1, max 12
   },
 
   domReady: false,
@@ -19,6 +22,8 @@ Module.register('MMM-tractive', {
   trackerData: null,
   trackerHardwareData: null,
   trackerLocationData: null,
+  stepsData: null,
+  stepsRangeData: null,
 
   lightToggleState: { lightOn: false, inProgress: false },
   soundToggleState: { soundOn: false, inProgress: false },
@@ -26,7 +31,6 @@ Module.register('MMM-tractive', {
   start: function () {
     Log.info('Starting module: ' + this.name)
     console.log('[MMM-tractive] Module started')
-    
     setInterval(
       this.update.bind(this),
       this.config.updateInterval * 60 * 1000)
@@ -35,6 +39,8 @@ Module.register('MMM-tractive', {
   update: function () {
     console.log('[MMM-tractive] Fetching tractive info...')
     this.sendSocketNotification('TRACTIVE_UPDATE', {petId: this.config.petId, trackerId: this.config.trackerId})
+    this.sendSocketNotification('STEPS_UPDATE', {})
+    this.sendSocketNotification('STEPS_RANGE_UPDATE', {})
   },
 
   getStyles: function () {
@@ -42,7 +48,10 @@ Module.register('MMM-tractive', {
   },
 
   getScripts: function () {
-    return [`tractive-dashboard.js`]
+    return [
+      'https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js',
+      'tractive-dashboard.js'
+    ]
   },
 
   getDom: function () {
@@ -126,28 +135,127 @@ Module.register('MMM-tractive', {
     const petName = this.petData?.details?.name || 'Pet Tracker';
     
     // Handle birthday - could be a string date or numeric timestamp
-    let petBirthday = null;
-    if (this.petData?.details?.birthday) {
-      const birthdayValue = this.petData.details.birthday;
-      if (typeof birthdayValue === 'string') {
-        petBirthday = new Date(birthdayValue);
-      } else if (typeof birthdayValue === 'number') {
-        // If it's a large number, assume it's milliseconds; if small, assume seconds
-        petBirthday = new Date(birthdayValue > 100000000000 ? birthdayValue : birthdayValue * 1000);
-      }
-    }
+    // let petBirthday = null;
+    // if (this.petData?.details?.birthday) {
+    //   const birthdayValue = this.petData.details.birthday;
+    //   if (typeof birthdayValue === 'string') {
+    //     petBirthday = new Date(birthdayValue);
+    //   } else if (typeof birthdayValue === 'number') {
+    //     // If it's a large number, assume it's milliseconds; if small, assume seconds
+    //     petBirthday = new Date(birthdayValue > 100000000000 ? birthdayValue : birthdayValue * 1000);
+    //   }
+    // }
     
     const batteryLevel = this.trackerHardwareData ? this.trackerHardwareData.battery_level : null;
     const minutesActive = this.petHealthData ? this.petHealthData.activity?.minutesActive : null;
     const minutesGoal = this.petHealthData ? this.petHealthData.activity?.minutesGoal : null;
-    const alerts = this.petHealthData ? this.petHealthData.healthAlerts?.unseenCount : null; 
+    const alerts = this.petHealthData ? this.petHealthData.healthAlerts?.unseenCount : null;
+    
+    // Validate stepsGraphLabelGapHours - should be between 1 and 12
+    let stepsGraphLabelGapHours = this.config.stepsGraphLabelGapHours;
+    if (typeof stepsGraphLabelGapHours !== 'number' || stepsGraphLabelGapHours < 1 || stepsGraphLabelGapHours > 12) {
+      stepsGraphLabelGapHours = 1;
+      console.log('[MMM-tractive] stepsGraphLabelGapHours invalid, defaulting to 1');
+    }
+    
+    // Get steps data from Garmin backend service (via node_helper)
+    let slotStepsData = [];
+    let totalStepsValue = 0;
+    
+    if (this.stepsData && this.stepsData.length > 0) {
+      // Parse activity time range from config
+      const [startHour, startMin] = this.config.activityStartTime.split(':').map(Number);
+      const [endHour, endMin] = this.config.activityEndTime.split(':').map(Number);
+      const startTimeMinutes = startHour * 60 + startMin;
+      const endTimeMinutes = endHour * 60 + endMin;
+      
+      // Create a map of backend data for quick lookup
+      const backendDataMap = {};
+      this.stepsData.forEach(slot => {
+        const slotTimeMinutes = slot.hour * 60 + slot.minutes;
+        backendDataMap[slotTimeMinutes] = slot.steps;
+      });
+      
+      // Generate all slots in the configured time range, filling in backend data or 0
+      for (let timeMinutes = startTimeMinutes; timeMinutes <= endTimeMinutes; timeMinutes += 30) {
+        let hour = Math.floor(timeMinutes / 60);
+        const minutes = timeMinutes % 60;
+        // Handle 24:00 as 00:00 (midnight)
+        if (hour >= 24) {
+          hour = 0;
+        }
+        const steps = backendDataMap[timeMinutes] || 0;
+        
+        slotStepsData.push({
+          slot: slotStepsData.length,
+          hour: hour,
+          minutes: minutes,
+          steps: steps
+        });
+      }
+      
+      totalStepsValue = slotStepsData.reduce((sum, s) => sum + s.steps, 0);
+      console.log('[MMM-tractive] Using steps data:', slotStepsData.length, 'slots (from', this.config.activityStartTime, 'to', this.config.activityEndTime, '), total:', totalStepsValue);
+    } else {
+      console.log('[MMM-tractive] Waiting for steps data from backend...');
+    }
+    
+    const stepsData = {
+      totalSteps: totalStepsValue,
+      slotSteps: slotStepsData
+    };
 
-    mainContent.appendChild(createHeader(new Date()));
-    mainContent.appendChild(createProfileSection(petName, onRefreshClick));
-    // mainContent.appendChild(createControlsSection(onRefreshClick, onLightToggleClick, this.lightToggleState.inProgress, onSoundToggleClick, this.soundToggleState.inProgress));
-    mainContent.appendChild(createStatusRow(petBirthday, batteryLevel, isCharging, batterySaveMode));
-    mainContent.appendChild(createActivitySection(minutesActive, minutesGoal));
-    mainContent.appendChild(createMetricsRow(respiratoryStatus, heartRateStatus, alerts));
+    mainContent.appendChild(createHeader(new Date(), batteryLevel, isCharging, batterySaveMode));
+    
+    // Calculate percentages for gauge charts
+    const activityPercentage = (minutesActive != null && minutesGoal != null) ? (minutesActive / minutesGoal) * 100 : 0;
+    const stepsPercentage = (totalStepsValue != null) ? (totalStepsValue / 10000) * 100 : 0;
+    
+    // Profile (centered overlay), Heart Rate Gauge (middle), and Gauges (background)
+    const profileGaugesWrapper = document.createElement('div');
+    profileGaugesWrapper.style.display = 'flex';
+    profileGaugesWrapper.style.position = 'relative';
+    profileGaugesWrapper.style.width = '100%';
+    profileGaugesWrapper.style.justifyContent = 'center';
+    profileGaugesWrapper.style.alignItems = 'center';
+    profileGaugesWrapper.style.minHeight = '800px';
+    
+    // Add gauges as background
+    const gaugesSection = createGaugeChartsSection(activityPercentage, stepsPercentage);
+    gaugesSection.style.position = 'absolute';
+    gaugesSection.style.width = '100%';
+    gaugesSection.style.zIndex = '1';
+    profileGaugesWrapper.appendChild(gaugesSection);
+    
+    // // Add heart rate gauge as middle overlay
+    // const heartRateGaugeSection = createHealthStatusGaugeSection(heartRateStatus, alerts, respiratoryStatus);
+    // heartRateGaugeSection.style.position = 'absolute';
+    // heartRateGaugeSection.style.width = '100%';
+    // heartRateGaugeSection.style.zIndex = '5';
+    // profileGaugesWrapper.appendChild(heartRateGaugeSection);
+    
+    // Add profile picture as overlay on top
+    const profileSection = createProfileSection(petName, onRefreshClick);
+    profileSection.style.position = 'relative';
+    profileSection.style.zIndex = '10';
+    profileGaugesWrapper.appendChild(profileSection);
+    
+    // Add metrics row as overlay
+    const metricsRow = createMetricsRow(respiratoryStatus, heartRateStatus, alerts);
+    metricsRow.id = 'metricsRow';
+    metricsRow.style.position = 'absolute';
+    metricsRow.style.display = 'flex';
+    metricsRow.style.alignItems = 'flex-start';
+    metricsRow.style.top = '0';
+    metricsRow.style.left = '100px';
+    metricsRow.style.right = '0';
+    metricsRow.style.zIndex = '8';
+    metricsRow.style.paddingTop = '8px';
+    profileGaugesWrapper.appendChild(metricsRow);
+    
+    mainContent.appendChild(profileGaugesWrapper);
+    
+    mainContent.appendChild(createStepsGraphsToggle(stepsData, this.stepsRangeData, stepsGraphLabelGapHours));
 
     dashboard.appendChild(mainContent);
 
@@ -186,6 +294,10 @@ Module.register('MMM-tractive', {
       this.trackerData = payload
     } else if (notification === 'TRACKER_LOCATION_DATA') {
       this.trackerLocationData = payload
+    } else if (notification === 'STEPS_DATA') {
+      this.stepsData = payload
+    } else if (notification === 'STEPS_RANGE_DATA') {
+      this.stepsRangeData = payload
     } else if (notification === 'SOUND_ON_FAILURE' || notification === 'SOUND_OFF_FAILURE') {
       this.soundToggleState.inProgress = false ;
       this.soundToggleState.soundOn = !this.soundToggleState.soundOn;

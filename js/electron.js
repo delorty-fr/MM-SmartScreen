@@ -27,10 +27,25 @@ let mainWindow;
  */
 function createWindow () {
 	// see https://www.electronjs.org/docs/latest/api/screen
+	// Determine which display to use (default to primary/first display)
+	let targetDisplay = electron.screen.getPrimaryDisplay();
+	
+	// Parse screen index from command line arguments (--screen=0, --screen=1, etc.)
+	const screenArg = process.argv.find(arg => arg.startsWith("--screen="));
+	if (screenArg) {
+		const screenIndex = parseInt(screenArg.split("=")[1], 10);
+		const displays = electron.screen.getAllDisplays();
+		if (screenIndex >= 0 && screenIndex < displays.length) {
+			targetDisplay = displays[screenIndex];
+		} else {
+			Log.warn(`Screen index ${screenIndex} not found. Using primary display.`);
+		}
+	}
+	
 	// Create a window that fills the screen's available work area.
 	let electronSize = (800, 600);
 	try {
-		electronSize = electron.screen.getPrimaryDisplay().workAreaSize;
+		electronSize = targetDisplay.workAreaSize;
 	} catch {
 		Log.warn("Could not get display size, using defaults ...");
 	}
@@ -41,8 +56,8 @@ function createWindow () {
 		width: electronSize.width,
 		height: electronSize.height,
 		icon: "mm2.png",
-		x: 0,
-		y: 0,
+		x: targetDisplay.bounds.x,
+		y: targetDisplay.bounds.y,
 		darkTheme: true,
 		webPreferences: {
 			contextIsolation: true,

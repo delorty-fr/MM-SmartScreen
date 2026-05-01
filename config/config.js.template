@@ -149,8 +149,8 @@ let config = {
 			module: "MMM-tractive",
 			position: "fullscreen_below",
 			config: {
-				petId: 'YOUR_TRACTIVE_PET_ID',
-				trackerId: 'YOUR_TRACTIVE_TRACKER_ID',
+				petId: '${TRACTIVE_PET_ID}',
+				trackerId: '${TRACTIVE_TRACKER_ID}',
 			}
 		},
 		// WB-weather adds weather (Optional Module)

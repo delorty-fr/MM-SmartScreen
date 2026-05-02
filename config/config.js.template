@@ -16,6 +16,9 @@ const BOSTON_LAT = 42.361145;
 const PARIS_LONG = 2.3522;
 const PARIS_LAT = 48.8566;
 
+const MOISSAC_LONG = 1.08468;
+const MOISSAC_LAT = 44.104852;
+
 let config = {
 	address: "localhost",
 	port: 8080,
@@ -77,6 +80,31 @@ let config = {
 				type: "forecast",
 				lon: PARIS_LONG,
 				lat: PARIS_LAT,
+				maxNumberOfDays: 7,
+				maxEntries: 7,
+			}
+		},
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "current",
+				showPrecipitationProbability: true,
+				showHumidity: true,
+				showSun: true,
+				lon: MOISSAC_LONG,
+				lat: MOISSAC_LAT,
+			}
+		},
+		{
+			module: "weather",
+			position: "top_right",
+			config: {
+				weatherProvider: "openmeteo",
+				type: "forecast",
+				lon: MOISSAC_LONG,
+				lat: MOISSAC_LAT,
 				maxNumberOfDays: 7,
 				maxEntries: 7,
 			}
